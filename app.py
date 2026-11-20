@@ -11,16 +11,207 @@ st.set_page_config(page_title="Cell Segmentation Lab", page_icon="🔬", layout=
 # -------------------- Styling --------------------
 st.markdown("""
 <style>
-.stApp { background: #f5f7fb; color: #172033; }
-[data-testid="stSidebar"] { background: #101827; }
-[data-testid="stSidebar"] * { color: #e9eef7 !important; }
-.block-container { padding-top: 1.6rem; padding-bottom: 2.2rem; max-width: 1500px; }
-.hero { background: linear-gradient(115deg,#12213a,#244c70); padding: 1.35rem 1.6rem; border-radius: 18px; color: white; margin-bottom: 1.2rem; }
-.hero h1 { color: white; margin: 0; font-size: 2rem; }
-.hero p { color: #d6e5f3; margin: .45rem 0 0; }
-.section-card { background: white; padding: 1rem 1.2rem; border: 1px solid #e5eaf1; border-radius: 14px; }
-.small-note { color: #667085; font-size: .9rem; }
-div[data-testid="stMetric"] { background: white; padding: .8rem; border: 1px solid #e5eaf1; border-radius: 12px; }
+/* Global light palette: explicit colors prevent washed-out Streamlit text. */
+:root {
+    color-scheme: light;
+    --text-color: #182230;
+    --primary-color: #d94b58;
+    --background-color: #f4f7fb;
+    --secondary-background-color: #ffffff;
+}
+.stApp {
+    background: #f4f7fb !important;
+    color: #182230 !important;
+}
+[data-testid="stMain"] {
+    background: #f4f7fb !important;
+}
+[data-testid="stMainBlockContainer"] {
+    padding-top: 1.45rem !important;
+    padding-bottom: 2.4rem !important;
+    max-width: 1540px !important;
+}
+
+/* Main-area typography */
+[data-testid="stMain"] h1,
+[data-testid="stMain"] h2,
+[data-testid="stMain"] h3,
+[data-testid="stMain"] h4 {
+    color: #172b45 !important;
+    opacity: 1 !important;
+}
+[data-testid="stMain"] p,
+[data-testid="stMain"] li,
+[data-testid="stMain"] label,
+[data-testid="stMain"] [data-testid="stMarkdownContainer"] {
+    color: #344054;
+    opacity: 1;
+}
+[data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] * {
+    color: #667085 !important;
+    opacity: 1 !important;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background: #101b2b !important;
+    border-right: 1px solid #23344d;
+}
+[data-testid="stSidebar"] * {
+    color: #edf3fb !important;
+    opacity: 1 !important;
+}
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
+    color: #dce7f5 !important;
+    font-weight: 600 !important;
+}
+[data-testid="stSidebar"] input,
+[data-testid="stSidebar"] textarea {
+    color: #182230 !important;
+}
+
+/* Header */
+.hero {
+    background: linear-gradient(115deg, #14243d 0%, #24547b 100%);
+    padding: 1.45rem 1.65rem;
+    border-radius: 18px;
+    color: #ffffff !important;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 8px 22px rgba(18, 42, 70, .12);
+}
+.hero h1 {
+    color: #ffffff !important;
+    margin: 0;
+    font-size: 1.9rem;
+    line-height: 1.25;
+}
+.hero p {
+    color: #e4edf7 !important;
+    margin: .5rem 0 0;
+    font-size: .98rem;
+}
+
+/* Metric cards: label and number are forced to high-contrast dark colors. */
+div[data-testid="stMetric"] {
+    background: #ffffff !important;
+    border: 1px solid #dce4ef !important;
+    border-radius: 14px !important;
+    padding: .95rem 1rem !important;
+    box-shadow: 0 2px 7px rgba(16, 37, 63, .035);
+}
+div[data-testid="stMetric"] [data-testid="stMetricLabel"],
+div[data-testid="stMetric"] [data-testid="stMetricLabel"] * {
+    color: #53657c !important;
+    opacity: 1 !important;
+    font-weight: 600 !important;
+}
+div[data-testid="stMetric"] [data-testid="stMetricValue"],
+div[data-testid="stMetric"] [data-testid="stMetricValue"] * {
+    color: #172b45 !important;
+    opacity: 1 !important;
+    font-weight: 750 !important;
+}
+div[data-testid="stMetric"] [data-testid="stMetricDelta"],
+div[data-testid="stMetric"] [data-testid="stMetricDelta"] * {
+    color: #53657c !important;
+    opacity: 1 !important;
+}
+
+/* Tabs: inactive tabs stay readable, active tab gets a clear accent. */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+    border-bottom: 1px solid #d8e0eb;
+}
+.stTabs [data-baseweb="tab"] {
+    color: #40536b !important;
+    background: #e9eef5 !important;
+    border-radius: 10px 10px 0 0 !important;
+    padding: .65rem 1rem !important;
+    font-weight: 650 !important;
+    opacity: 1 !important;
+}
+.stTabs [data-baseweb="tab"] * {
+    color: inherit !important;
+    opacity: 1 !important;
+}
+.stTabs [data-baseweb="tab"][aria-selected="true"] {
+    color: #ffffff !important;
+    background: #1d4e79 !important;
+}
+.stTabs [data-baseweb="tab-highlight"] {
+    background: #d94b58 !important;
+}
+
+/* Buttons and download buttons */
+[data-testid="stDownloadButton"] button,
+[data-testid="stButton"] button,
+.stDownloadButton button,
+.stButton button {
+    background: #1f527d !important;
+    color: #ffffff !important;
+    border: 1px solid #1f527d !important;
+    border-radius: 9px !important;
+    min-height: 2.7rem;
+    font-weight: 650 !important;
+    opacity: 1 !important;
+    box-shadow: 0 2px 5px rgba(24, 61, 95, .12);
+}
+[data-testid="stDownloadButton"] button *,
+[data-testid="stButton"] button *,
+.stDownloadButton button *,
+.stButton button * {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+    opacity: 1 !important;
+}
+[data-testid="stDownloadButton"] button:hover,
+[data-testid="stButton"] button:hover,
+.stDownloadButton button:hover,
+.stButton button:hover {
+    background: #173e60 !important;
+    border-color: #173e60 !important;
+}
+
+/* Inputs and select boxes in main content */
+[data-testid="stMain"] input,
+[data-testid="stMain"] textarea {
+    color: #182230 !important;
+}
+[data-testid="stMain"] [data-baseweb="select"] * {
+    color: #182230 !important;
+}
+
+/* Export cards */
+.download-card {
+    background: #ffffff;
+    border: 1px solid #dce4ef;
+    border-radius: 13px;
+    padding: 1rem 1.1rem;
+    min-height: 112px;
+    margin-bottom: .75rem;
+}
+.download-card h4 {
+    color: #172b45 !important;
+    margin: 0 0 .35rem 0;
+    font-size: 1rem;
+}
+.download-card p {
+    color: #667085 !important;
+    margin: 0;
+    font-size: .88rem;
+}
+
+/* Dataframes and alerts */
+[data-testid="stDataFrame"] {
+    border: 1px solid #dce4ef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+[data-testid="stAlert"] p {
+    color: #26384d !important;
+    opacity: 1 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -212,10 +403,37 @@ with experiment_tab:
             st.info("Interpretasi: marker terlalu banyak dapat menyebabkan over-segmentation, sedangkan marker terlalu sedikit dapat menyebabkan beberapa objek bergabung. Pilih parameter berdasarkan boundary yang paling sesuai dengan objek.")
 
 with download_tab:
-    st.markdown("### Download output")
-    st.write("Unduh hasil preprocessing dan segmentasi untuk dokumentasi atau analisis lanjutan.")
-    st.download_button("Download binary mask", png_bytes(mask), file_name="binary_mask.png", mime="image/png")
+    st.markdown("### Download hasil segmentasi")
+    st.markdown(
+        "Simpan setiap tahap pemrosesan untuk dokumentasi, laporan, atau analisis lanjutan. "
+        "Tombol unduh di bawah akan menghasilkan file PNG.")
+
     norm_dist = (dist / dist.max() * 255).astype(np.uint8) if dist.max() > 0 else np.zeros_like(dist, dtype=np.uint8)
-    st.download_button("Download distance transform", png_bytes(norm_dist), file_name="distance_transform.png", mime="image/png")
-    st.download_button("Download boundary overlay", png_bytes(overlay, is_rgb=True), file_name="watershed_boundary.png", mime="image/png")
-    st.download_button("Download label map", png_bytes(labels.astype(np.uint16)), file_name="watershed_labels.png", mime="image/png")
+    label_preview = labels.astype(np.uint16)
+
+    export_items = [
+        ("Binary mask", "Mask hitam-putih hasil thresholding dan morfologi.",
+         png_bytes(mask), "binary_mask.png"),
+        ("Distance transform", "Peta jarak foreground terhadap background terdekat.",
+         png_bytes(norm_dist), "distance_transform.png"),
+        ("Boundary overlay", "Garis batas watershed yang ditumpangkan pada citra asli.",
+         png_bytes(overlay, is_rgb=True), "watershed_boundary.png"),
+        ("Watershed label map", "Setiap region memiliki label segmentasi tersendiri.",
+         png_bytes(label_preview), "watershed_labels.png"),
+    ]
+
+    export_cols = st.columns(2, gap="large")
+    for idx, (title, description, data, filename) in enumerate(export_items):
+        with export_cols[idx % 2]:
+            st.markdown(
+                f'<div class="download-card"><h4>{title}</h4><p>{description}</p></div>',
+                unsafe_allow_html=True,
+            )
+            st.download_button(
+                label=f"⬇️ Download {title}",
+                data=data,
+                file_name=filename,
+                mime="image/png",
+                use_container_width=True,
+                key=f"download_{filename}",
+            )
